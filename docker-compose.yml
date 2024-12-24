@@ -1,0 +1,63 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend  
+    container_name: backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://yaitec:portal1234@postgres:5432/portal
+      - USER_AGENT=Portal/1.0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0  
+    restart: always
+    volumes:
+      - ./backend:/app
+      - ./backend/pdfs:/app/pdfs
+
+  celery_worker:
+    build: ./backend
+    command: celery -A celery_config.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://yaitec:portal1234@postgres:5432/portal
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0  
+    volumes:
+      - ./backend:/app
+      - ./backend/pdfs:/app/pdfs
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  frontend:
+    build: ./frontend  
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    restart: always
+   
+  postgres:
+    image: postgres:16.4  
+    container_name: postgres
+    environment:
+      POSTGRES_USER: yaitec
+      POSTGRES_PASSWORD: portal1234
+      POSTGRES_DB: portal
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Content Creation Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        h1, h2 { color: #333; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; }
+        .competitor { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Multi-Agent Content Creation Platform</h1>
+
+    <h2>Competitors</h2>
+    {% for competitor in competitors %}
+        <div class="competitor">
+            <h3>{{ competitor.name }}</h3>
+            <p>Website: {{ competitor.website }}</p>
+            <p>Social Media: {{ competitor.social_media }}</p>
+            <a href="/brand_voice/{{ competitor.id }}">View Brand Voice Analysis</a>
+        </div>
+    {% endfor %}
+
+    <h2>Brand Voice Analysis</h2>
+    {% if brand_voice %}
+        <pre>{{ brand_voice.brand_voice_analysis }}</pre>
+    {% else %}
+        <p>Select a competitor to view their brand voice analysis.</p>
+    {% endif %}
+
+    <h2>Content Creation</h2>
+    <form action="/content_creator" method="post">
+        <label for="competitor_brand_voices">Competitor Brand Voices (comma-separated IDs):</label><br>
+        <input type="text" id="competitor_brand_voices" name="competitor_brand_voices" required><br>
+        <label for="platforms">Platforms (comma-separated):</label><br>
+        <input type="text" id="platforms" name="platforms" required><br>
+        <label for="campaign_duration">Campaign Duration (months):</label><br>
+        <input type="number" id="campaign_duration" name="campaign_duration" required><br>
+        <label for="posts_per_month">Posts per Month:</label><br>
+        <input type="number" id="posts_per_month" name="posts_per_month" required><br>
+        <label for="goals">Goals (comma-separated):</label><br>
+        <input type="text" id="goals" name="goals" required><br>
+        <input type="submit" value="Create Content Plan">
+    </form>
+
+    {% if content_plan %}
+        <h3>Content Plan</h3>
+        <pre>{{ content_plan }}</pre>
+    {% endif %}
+</body>
+</html>
